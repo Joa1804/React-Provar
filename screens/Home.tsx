@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { useState } from 'react';
+import {useEffect, useState } from 'react';
 import { useSQLiteContext } from 'expo-sqlite';
+import React from 'react';
+
 
 export default function Home({ navigation }: any) {
   const db = useSQLiteContext();

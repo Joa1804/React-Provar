@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Home from './screens/Home';
 import ListarTarefas from './screens/List';
-import { databaseConnection } from './db/database';
+import { DatabaseConnection } from './db/database';
 import { SQLiteDatabase, SQLiteProvider } from 'expo-sqlite';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -12,7 +12,7 @@ export default function App() {
  
 
   return (
-    <SQLiteProvider databaseName="tarefas.db" onInit={databaseConnection}>
+    <SQLiteProvider databaseName="tarefas.db" onInit={DatabaseConnection}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
