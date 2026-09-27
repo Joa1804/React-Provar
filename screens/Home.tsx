@@ -6,13 +6,11 @@ import React from 'react';
 export default function Home({ route, navigation }: any) {
   const db = useSQLiteContext();
   
-  // Recebe os dados se vier da tela de listagem
   const tarefaEdit = route.params?.tarefaParaEditar;
 
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
 
-  // Preenche os campos se for uma edição
   useEffect(() => {
     if (tarefaEdit) {
       setTitulo(tarefaEdit.titulo);
@@ -28,7 +26,6 @@ export default function Home({ route, navigation }: any) {
 
     try {
       if (tarefaEdit) {
-        // UPDATE: Edita a tarefa existente
         await db.runAsync(
           'UPDATE tarefas SET titulo = ?, descricao = ? WHERE id = ?',
           titulo.trim(),
@@ -36,7 +33,6 @@ export default function Home({ route, navigation }: any) {
           tarefaEdit.id
         );
       } else {
-        // INSERT: Cria uma nova tarefa
         await db.runAsync(
           'INSERT INTO tarefas (titulo, descricao) VALUES (?, ?)',
           titulo.trim(),
