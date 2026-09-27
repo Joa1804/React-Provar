@@ -5,6 +5,7 @@ import React from 'react';
 
 export default function Home({ route, navigation }: any) {
   const db = useSQLiteContext();
+  
   const tarefaEdit = route.params?.tarefaParaEditar;
 
   const [titulo, setTitulo] = useState('');
