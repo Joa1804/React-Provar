@@ -1,120 +1,74 @@
-import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native';
-import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import React from 'react';
 
 type Tarefa = {
-    id: number,
-    titulo: string, 
-    descricao: string,
-    status: number
-}
+  id: number;
+  titulo: string;
+  descricao: string;
+  status: number;
+};
 
-export default function TarefaCard() {
-    const db = useSQLiteContext();
-    const [tarefas, setTarefas] = useState<Tarefa[]>([]); 
+type Props = {
+  tarefa: Tarefa;
+  onEditar: () => void;
+  onExcluir: () => void;
+};
 
-    useEffect(() => {
-        carregarTarefas();
-    }, []);
-
-    async function carregarTarefas() {
-        const resultado = await db.getAllAsync(`
-            SELECT *
-            FROM tarefas
-            ORDER BY id DESC
-        `) as Tarefa[]; 
-        setTarefas(resultado);
-    }
-
-    return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Lista de Tarefas</Text>
-            
-            <FlatList
-                data={tarefas}
-                keyExtractor={(item) => String(item.id)}
-                renderItem={({ item }) => (
-                    <View style={styles.card}>
-                        <View style={styles.infoContainer}>
-                            <Text style={styles.titulo}>{item.titulo}</Text>
-                            <Text style={styles.descricao}>{item.descricao}</Text>
-                            <Text style={[
-                                styles.status, 
-                                { color: item.status === 1 ? '#28a745' : '#dc3545' }
-                            ]}>
-                                {item.status === 1 ? 'Concluída' : 'Pendente'}
-                            </Text>
-                        </View>
-
-                        <Pressable 
-                            style={styles.botaoAcao}
-                            onPress={() => console.log('Clicou na tarefa:', item.id)}
-                        >
-                            <Text style={styles.textoBotao}>Ação</Text>
-                        </Pressable>
-                    </View>
-                )}
-                ListEmptyComponent={<Text style={styles.vazio}>Nenhuma tarefa encontrada.</Text>}
-            />
+export default function TarefaCard({ tarefa, onEditar, onExcluir }: Props) {
+  return (
+    <View style={styles.card}>
+      <View style={styles.cardTopo}>
+        <Text style={styles.titulo}>{tarefa.titulo}</Text>
+        <View style={[styles.badge, tarefa.status ? styles.badgeFeita : styles.badgePendente]}>
+          <Text style={styles.badgeTexto}>{tarefa.status ? 'Feita' : 'Pendente'}</Text>
         </View>
-    );
+      </View>
+
+      {!!tarefa.descricao && <Text style={styles.descricao}>{tarefa.descricao}</Text>}
+
+      <View style={styles.acoesContainer}>
+        <Pressable style={styles.btnEditar} onPress={onEditar}>
+          <Text style={styles.btnTexto}>Editar</Text>
+        </Pressable>
+
+        <Pressable style={styles.btnDeletar} onPress={onExcluir}>
+          <Text style={styles.btnTexto}>Excluir</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: '#f8f9fa',
-    },
-    header: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        marginBottom: 16,
-        color: '#333',
-        textAlign: 'center',
-    },
-    card: {
-        backgroundColor: '#ffffff',
-        padding: 16,
-        marginBottom: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    infoContainer: {
-        flex: 1,
-        paddingRight: 12,
-    },
-    titulo: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#212529',
-    },
-    descricao: {
-        fontSize: 14,
-        color: '#6c757d',
-        marginTop: 4,
-    },
-    status: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        marginTop: 8,
-    },
-    botaoAcao: {
-        backgroundColor: '#0d6efd',
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        borderRadius: 6,
-    },
-    textoBotao: {
-        color: '#ffffff',
-        fontWeight: 'bold',
-        fontSize: 14,
-    },
-    vazio: {
-        textAlign: 'center',
-        marginTop: 20,
-        color: '#6c757d',
-        fontSize: 16,
-    }
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
+  },
+  cardTopo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  titulo: { fontWeight: 'bold', fontSize: 15, color: '#1a1a1a', flexShrink: 1, marginRight: 8 },
+  descricao: { color: '#555', fontSize: 13, marginTop: 4 },
+
+  badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
+  badgeFeita: { backgroundColor: '#e3f7e9' },
+  badgePendente: { backgroundColor: '#fff3e0' },
+  badgeTexto: { fontSize: 11, fontWeight: '600', color: '#333' },
+
+  acoesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+    marginTop: 10,
+    paddingTop: 10,
+  },
+  btnEditar: { backgroundColor: '#ffc107', padding: 8, borderRadius: 8, flex: 1, marginRight: 5, alignItems: 'center' },
+  btnDeletar: { backgroundColor: '#dc3545', padding: 8, borderRadius: 8, flex: 1, marginLeft: 5, alignItems: 'center' },
+  btnTexto: { fontWeight: 'bold', color: '#fff', fontSize: 13 },
 });
